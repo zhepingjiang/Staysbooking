@@ -3,10 +3,13 @@ package com.laioffer.staybooking;
 import com.laioffer.staybooking.booking.DeleteBookingNotAllowedException;
 import com.laioffer.staybooking.booking.InvalidBookingException;
 import com.laioffer.staybooking.booking.ListingBookingsNotAllowedException;
+import com.laioffer.staybooking.listing.DeleteListingNotAllowedException;
+import com.laioffer.staybooking.listing.InvalidListingSearchException;
 import com.laioffer.staybooking.model.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -43,6 +46,30 @@ public class GlobalControllerExceptionHandler {
         return new ResponseEntity<>(new ErrorResponse(
                 e.getMessage(),
                 "invalid_booking_request"),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DeleteListingNotAllowedException.class)
+    public final ResponseEntity<ErrorResponse> handleException(DeleteListingNotAllowedException e) {
+        return new ResponseEntity<>(new ErrorResponse(
+                e.getMessage(),
+                "delete_listing_not_allowed"),
+                HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(InvalidListingSearchException.class)
+    public final ResponseEntity<ErrorResponse> handleException(InvalidListingSearchException ex) {
+        return new ResponseEntity<>(new ErrorResponse(
+                ex.getMessage(),
+                "invalid_search_request"),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public final ResponseEntity<ErrorResponse> handleException(MissingServletRequestParameterException ex) {
+        return new ResponseEntity<>(new ErrorResponse(
+                "Required request parameter is missing",
+                "missing_request_parameter"),
                 HttpStatus.BAD_REQUEST);
     }
 }
